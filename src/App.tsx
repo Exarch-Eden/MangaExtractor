@@ -1,34 +1,31 @@
 // third-party libraries
-import React, { useCallback, useEffect, useState } from "react";
+import { HashRouter } from "react-router-dom";
+import Navbar from "./components/Navbar";
 
 // components
+import Routes from "./components/Routes";
 
 // css
 import "./styles/App.css";
 
-// constants
-import { serverDefaultUrl } from "./constants/serverURLS";
-
 const App = () => {
-  const [serverText, setServerText] = useState("not fetched");
-
-  const fetchData = useCallback(async () => {
-    const res = await fetch(serverDefaultUrl);
-    const data = await res.text();
-    setServerText(data);
-  }, []);
-
-  // for server testing purposes
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   return (
     <div className="App">
-      <p>This is the electron app.</p>
-      <p>Server Text: {serverText}</p>
+      <HashRouter>
+        <header>
+          <Navbar />
+        </header>
+        <main>
+          <Routes />
+        </main>
+        <footer>
+          <p>
+            Electron app created by Kent Claudio
+          </p>
+        </footer>
+      </HashRouter>
     </div>
   );
-}
+};
 
 export default App;
