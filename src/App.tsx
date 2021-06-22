@@ -9,7 +9,7 @@ import "./styles/App.css";
 // constants
 import { serverDefaultUrl } from "./constants/serverURLS";
 
-function App() {
+const App = () => {
   const [serverText, setServerText] = useState("not fetched");
 
   const fetchData = useCallback(async () => {

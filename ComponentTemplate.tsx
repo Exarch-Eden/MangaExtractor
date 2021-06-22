@@ -5,7 +5,7 @@
 // css
 
 // replace "App" with desired function component name
-function App() {
+const App = () => {
   return (
     <div>
       
