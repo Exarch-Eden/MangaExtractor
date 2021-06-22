@@ -8,7 +8,7 @@ Build notes for release versions.
 # Production build and setup instructions
 Production build generation and setup instructions for `Windows-based` computers.
 
-**<span style="color: red;">Warning</span>: Your node modules must be up to date. Do this by executing command: `npm install`.**
+<b><span style="color: red;">Warning</span>: Your node modules must be up to date. Do this by executing command: `npm install`.</b>
 
 1. Open command terminal in project root directory
 2. Execute command:
@@ -42,7 +42,7 @@ Custom node script commands with several different functionalities to facilitate
 <br>
 <br>
 
-**<span style="color: red;">Warning</span>: Server-related changes require a full restart of the electron app via `npm start` or `npm run electron-dev`.**
+<b><span style="color: red;">Warning</span>: Server-related changes require a full restart of the electron app via `npm start` or `npm run electron-dev`.</b>
 
 - `npm run electron-start`
   - Starts up the electron app for easy access during development (depends on the command `npm run react-build` for changes to be seen live)
