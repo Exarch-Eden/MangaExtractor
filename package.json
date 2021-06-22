@@ -38,7 +38,7 @@
     "electron-dev": "npm run react-build && npm run electron-start",
     "release": "npm run react-build && electron-builder --publish=always",
     "build": "npm run react-build && npm run electron-build",
-    "start": "electron-dev"
+    "start": "npm run electron-dev"
   },
   "eslintConfig": {
     "extends": [
