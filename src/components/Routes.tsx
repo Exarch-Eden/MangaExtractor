@@ -1,4 +1,6 @@
 // third-party libraries
+import { Route, Switch } from "react-router-dom";
+import Home from "../screens/Home";
 
 // components
 
@@ -6,9 +8,11 @@
 
 const Routes = () => {
   return (
-    <div>
-      
-    </div>
+    <Switch>
+      <Route exact path="/">
+        <Home />
+      </Route>
+    </Switch>
   );
 }
 

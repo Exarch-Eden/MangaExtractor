@@ -19,9 +19,7 @@ const App = () => {
           <Routes />
         </main>
         <footer>
-          <p>
-            Electron app created by Kent Claudio
-          </p>
+          <p>Electron app created by Kent Claudio</p>
         </footer>
       </HashRouter>
     </div>
