@@ -1,6 +1,6 @@
 // third-party libraries
 import { HashRouter } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import NavBar from "./components/Navbar";
 
 // components
 import Routes from "./components/Routes";
@@ -12,13 +12,13 @@ const App = () => {
   return (
     <div className="App">
       <HashRouter>
-        <header>
-          <Navbar />
+        <header className="headerContainer">
+          <NavBar />
         </header>
-        <main>
+        <main className="mainContainer">
           <Routes />
         </main>
-        <footer>
+        <footer className="footerContainer verticalPadding">
           <p>Electron app created by Kent Claudio</p>
         </footer>
       </HashRouter>
