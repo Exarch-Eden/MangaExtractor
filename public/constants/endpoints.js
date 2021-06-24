@@ -3,4 +3,7 @@
  */
 exports.ENDPOINTS = {
   default: "/",
+  latest: "/latest",
+  title: "/title",
+  search: "/search",
 };
