@@ -23,12 +23,12 @@ const Routes = () => {
       <Route exact path="/search">
         <Search />
       </Route>
-      <Route exact path="/title/:id">
+      <Route exact path="/title/:website/:id">
         <IndividualTitle />
       </Route>
-      <Route exact path="/title/:id/:page">
+      {/* <Route exact path="/title/:id/:page">
         <ImagePage />
-      </Route>
+      </Route> */}
     </Switch>
   );
 };

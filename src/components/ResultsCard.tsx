@@ -27,7 +27,7 @@ import "../styles/Universal.css";
 // interfaces
 import { Book } from "../types/manga";
 
-const ResultsCard = ({ id, title, cover }: Book): ReactElement => {
+const ResultsCard = ({ id, title, cover, overviewPageLink }: Book): ReactElement => {
   // TODO: dynamically render table header with updated
   // books object
 
@@ -43,7 +43,7 @@ const ResultsCard = ({ id, title, cover }: Book): ReactElement => {
   };
 
   return (
-    <Link to={`/title/${id}`}>
+    <Link to={`/title/${overviewPageLink}/${id}`}>
       <Card
         className={classes.root}
         // onMouseOver={handleExpandHover}
