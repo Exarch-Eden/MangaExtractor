@@ -11,7 +11,13 @@ const maxPageValueRegex = /[0-9]+/g;
 
 // ([a-z]+\d+)(?=\w)
 // ([a-z]+\d+)$
+
+// for extracting the manga id
 const mangaIdRegex = /([a-z]+\d+)$/;
+// for removal of https:// and .com/ from the manga overview page link
+const mangaPageLinkSeparatorRegex = /(?<=https:\/\/)(.*)(?=\.com\/)/g;
+// const mangaPageLinkSeparatorRegex = /((\.com\/([a-z-]+\d+))|(https:\/\/))/g;
+// const mangaPageLinkSeparatorRegex = /((\.com\/)|(https:\/\/))/g;
 
 // anchor container for the title, id, and cover
 const mangaDivTag = `.container > .main-wrapper > .listCol > .truyen-list > .list-truyen-item-wrap`;
@@ -19,7 +25,7 @@ const mangaDivTag = `.container > .main-wrapper > .listCol > .truyen-list > .lis
 const idTag = "a:first-child";
 // holds the cover image
 const imgTag = `${idTag} > img`;
-// holds the title value
+// holds the title value and the manga overview page link
 const captionTag = `h3 > a`;
 // holds the latest updated chapter
 const latestChapterTag = `h3 + a`;
@@ -61,8 +67,26 @@ exports.getLatest = async (res, targetUrl) => {
       const title = $(element).find(captionTag).text();
       const coverUrl = $(element).find(imgTag).attr("src");
 
-      const matchedId = $(element).find(idTag).attr("href").match(mangaIdRegex);
+      // the original manga overview page link
+      const overviewPageLink = $(element).find(idTag).attr("href");
+
+      // the manga overview page link without the id
+      // example output: readmanganato
+      const baseOverviewPageLink = overviewPageLink.match(
+        mangaPageLinkSeparatorRegex
+      )[0];
+
+      // OLD CODE
+      // const baseOverviewPageLink = overviewPageLink.split(mangaIdRegex)
+      //   ? overviewPageLink
+      //       .split(mangaIdRegex)[0]
+      //       .replace(mangaPageLinkSeparatorRegex, "")
+      //   : undefined;
+
+      const matchedId = overviewPageLink.match(mangaIdRegex);
       const id = matchedId ? matchedId[0] : undefined;
+
+      const latestChapter = $(element).find(latestChapterTag).text();
 
       // for testing purposes
       // console.log("manga info:");
@@ -71,7 +95,7 @@ exports.getLatest = async (res, targetUrl) => {
       //   title: title,
       //   coverUrl: coverUrl,
       // });
-      
+
       if (!id) {
         throw Error("Could not grab manga ID");
       }
@@ -80,6 +104,8 @@ exports.getLatest = async (res, targetUrl) => {
         id: id,
         title: title,
         cover: coverUrl,
+        overviewPageLink: baseOverviewPageLink,
+        latestChapter: latestChapter,
       });
     });
 
