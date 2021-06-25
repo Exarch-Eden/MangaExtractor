@@ -17,6 +17,7 @@ import { serverTitleUrl } from "../constants/serverURLS";
 import { Book, SessionData } from "../types/manga";
 
 type IndividualTitleRouteParams = {
+  website: string;
   id: string;
 };
 
@@ -28,37 +29,40 @@ const IndividualTitle = () => {
   const [titleData, setTitleData] = useState<Book>(blankTitleData);
 
   // holds the id parameter passed through react-router
-  const { id }: IndividualTitleRouteParams = useParams();
+  const { website, id }: IndividualTitleRouteParams = useParams();
 
   // for testing purposes
+  console.log("website: ", website);
   console.log("id: ", id);
 
   // extract data of id-specified doujinshi
   useEffect(() => {
     // appends the id of the doujinshi to the url used to
-    const urlWithId = `${serverTitleUrl}?id=${id}`;
+    const targetUrl = `${serverTitleUrl}?website=${website}&id=${id}`;
 
     (async () => {
       try {
         // request server to fetch data
-        const res = await fetch(urlWithId);
+        const res = await fetch(targetUrl);
         const data = await res.json();
 
         console.log("retrieved title data:");
-        console.log(data);
+        console.table(data);
 
         setTitleData({
           id: id,
+          overviewPageLink: website,
           ...data,
         });
 
-        const sessionData: SessionData = {
-          id: id,
-          pages: data.pages,
-        };
+        // OLD CODE
+        // const sessionData: SessionData = {
+        //   id: id,
+        //   pages: data.pages,
+        // };
 
-        // store page urls in session storage
-        window.sessionStorage.setItem("pages", JSON.stringify(sessionData));
+        // // store page urls in session storage
+        // window.sessionStorage.setItem("pages", JSON.stringify(sessionData));
       } catch (error) {
         console.log(
           "Error occurred while attempting to fetch data from server"
@@ -67,7 +71,7 @@ const IndividualTitle = () => {
         console.log(error);
       }
     })();
-  }, [id]);
+  }, [website, id]);
 
   return (
     <div className="individualTitleContainer">
@@ -79,9 +83,16 @@ const IndividualTitle = () => {
         <div className="infoContainer verticalPadding">
           <TitleInfo {...titleData} />
         </div>
-        <div className="pagesContainer verticalPadding">
-          <CardLayout results={titleData.thumbnails || []} id={id} />
+        <div className="verticalPadding">
+          <ul>
+            {titleData.chapters?.map((chapter) => (
+              <li>{chapter}</li>
+            ))}
+          </ul>
         </div>
+        {/* <div className="pagesContainer verticalPadding">
+          <CardLayout results={titleData.thumbnails || []} id={id} />
+        </div> */}
       </div>
     </div>
   );

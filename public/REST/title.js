@@ -1,8 +1,23 @@
 const cheerio = require("cheerio");
 const fetch = require("node-fetch");
 const CODES = require("../constants/statusCodes").CODES;
+const WEBSITES = require("../constants/websites").WEBSITES;
+const WEBSITE_SPECIFIC_TAGS = require("../constants/websites").WEBSITE_SPECIFIC_TAGS;
 
-exports.getTitle = async (res, targetUrl, statusCodes) => {
+// removes any special characters (such as brackets or square brackets)
+const specialCharRegex = /\(|\)|\[|\]/g;
+
+// regex for extracting full-sized images from thumbnail src value
+const fullSizeFirstTRegex = /t\.nhentai\.net/g;
+const fullSizeLastTRegex = /\/[0-9]+t/g;
+// old code
+// const fullSizeLastTRegex = /\/[0-9]t/g;
+
+// TODO: change to access the actual page url itself and extract the image from there
+// rather than using the thumbnail image
+const imgTag = "img";
+
+exports.getTitle = async (res, targetUrl) => {
   // holds the data extracted from the website
   // data is relevant to an id-specified doujinshi
   const bookData = {};
@@ -10,31 +25,29 @@ exports.getTitle = async (res, targetUrl, statusCodes) => {
   // for testing purposes
   console.log("targetUrl: ", targetUrl);
 
-  // removes any special characters (such as brackets or square brackets)
-  const specialCharRegex = /\(|\)|\[|\]/g;
+  // website selector
+  // determines which set of element tags and DOM paths to use
+  let selectedWebsite = "";
+  let websiteTags = {};
 
-  // regex for extracting full-sized images from thumbnail src value
-  const fullSizeFirstTRegex = /t\.nhentai\.net/g;
-  const fullSizeLastTRegex = /\/[0-9]+t/g;
-  // old code
-  // const fullSizeLastTRegex = /\/[0-9]t/g;
+  for (const key in WEBSITES) {
+    const curWebsite = WEBSITES[key];
+    if (targetUrl.match()) {
+      selectedWebsite = curWebsite;
+      websiteTags = WEBSITE_SPECIFIC_TAGS[curWebsite];
+      break;
+    }
+  }
 
-  // element container for the cover image
-  const coverTag = "#bigcontainer > #cover > a > img";
+  // OLD CODE
+  // WEBSITES.forEach((website) => {
+    
+  // });
 
-  // element container for the title, id, artist, and tags of the doujinshi
-  const infoBlockTag = "#bigcontainer > #info-block > #info";
-  const artistTag = `${infoBlockTag} > h1.title > .before`;
-  const titleTag = `${infoBlockTag} > h1.title > .pretty`;
-  // element containing info regarding the parody, language, and translator
-  const othersTag = `${infoBlockTag} > h1.title > .after`;
-
-  // element container for the page images
-  const pageTag = "#thumbnail-container > .thumbs > .thumb-container > a";
-
-  // TODO: change to access the actual page url itself and extract the image from there
-  // rather than using the thumbnail image
-  const imgTag = "img";
+  console.log("selectedWebsite: ", selectedWebsite);
+  console.log("websiteTags: ");
+  console.log(websiteTags);
+  console.log("\n");
 
   try {
     console.log("fetching individual title data...");
@@ -48,42 +61,28 @@ exports.getTitle = async (res, targetUrl, statusCodes) => {
     const $ = cheerio.load(html);
 
     // extract cover image
-    bookData.cover = $(coverTag).attr("data-src");
+    bookData.cover = $(websiteTags.coverTag).attr("src");
 
     // extract other relevant data about the doujinshi
-    bookData.artist = $(artistTag).text().replace(specialCharRegex, "").trim();
-    bookData.title = $(titleTag).text().replace(specialCharRegex, "").trim();
+    bookData.artist = $(websiteTags.artistTag).text();
+    bookData.title = $(websiteTags.titleTag).text();
 
     // initialize page thumbnail images url array for bookData object
     bookData.thumbnails = [];
 
     bookData.pages = [];
 
-    // extract the page image urls (thumbnail images for now)
-    // will change to the full-sized images
-    $(pageTag).each((index, element) => {
-      const thumbnailUrl = $(element).find(imgTag).attr("data-src");
+    bookData.chapters = [];
 
-      // extracts the full-sized versions of the thumbnail images
-      const fullSizeUrl = thumbnailUrl
-        .replace(fullSizeFirstTRegex, "i.nhentai.net")
-        .replace(fullSizeLastTRegex, `/${index + 1}`);
+    // extract the chapters
+    $(websiteTags.chapterRowTag).each((index, element) => {
+      const chapterNum = $(element).find(websiteTags.chapterNumTag).text();
 
-      bookData.thumbnails.push(thumbnailUrl);
-      bookData.pages.push(fullSizeUrl);
+      bookData.chapters.push(chapterNum);
     });
 
-    // for extracting images
-    // $(aTag).each((index, element) => {
-    //   const title = $(element).find(captionTag).text();
-    //   const coverUrl = $(element).find(imgTag).attr("data-src");
-
-    //   // get the database id of the current book
-    //   // cut off the first 3 characters, in this case it is "/g/"
-    //   // since we only want the number
-    //   const id = $(element).attr("href").replace(idRegex, "");
-
-    // });
+    // reverse chapters[] in bookData so that it is numerically sorted
+    // NOTE: maybe do this in client instead
 
     console.log("successfully fetched individual title data");
   } catch (error) {
@@ -96,4 +95,18 @@ exports.getTitle = async (res, targetUrl, statusCodes) => {
   }
 
   res.send(bookData);
-}
+};
+
+// OLD CODE
+// // element container for the cover image
+// const coverTag = "#bigcontainer > #cover > a > img";
+
+// // element container for the title, id, artist, and tags of the doujinshi
+// const infoBlockTag = "#bigcontainer > #info-block > #info";
+// const artistTag = `${infoBlockTag} > h1.title > .before`;
+// const titleTag = `${infoBlockTag} > h1.title > .pretty`;
+// // element containing info regarding the parody, language, and translator
+// const othersTag = `${infoBlockTag} > h1.title > .after`;
+
+// // element container for the page images
+// const pageTag = "#thumbnail-container > .thumbs > .thumb-container > a";
