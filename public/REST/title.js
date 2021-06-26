@@ -32,7 +32,7 @@ exports.getTitle = async (res, targetUrl) => {
 
   for (const key in WEBSITES) {
     const curWebsite = WEBSITES[key];
-    if (targetUrl.match()) {
+    if (targetUrl.match(curWebsite)) {
       selectedWebsite = curWebsite;
       websiteTags = WEBSITE_SPECIFIC_TAGS[curWebsite];
       break;
@@ -44,9 +44,10 @@ exports.getTitle = async (res, targetUrl) => {
     
   // });
 
+  // for testing purposes
   console.log("selectedWebsite: ", selectedWebsite);
-  console.log("websiteTags: ");
-  console.log(websiteTags);
+  // console.log("websiteTags: ");
+  // console.log(websiteTags);
   console.log("\n");
 
   try {

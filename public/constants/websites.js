@@ -62,27 +62,27 @@ const WEBSITE_SPECIFIC_TAGS = {
   [WEBSITES.mangakakalot]: {
     // element container for the cover image
     coverTag: `${
-      WEBSITE_MAIN_TAGS[WEBSITES.readmanganato].mainContainerInfo
-    } > .story-info-left > .info-image > img`,
+      WEBSITE_MAIN_TAGS[WEBSITES.mangakakalot].mainContainerInfo
+    } > .manga-info-pic > img`,
     // element container for the title, id, artist, and tags of the doujinshi
     infoBlockTag: `${
-      WEBSITE_MAIN_TAGS[WEBSITES.readmanganato].mainContainerInfo
-    } > .story-info-right`,
+      WEBSITE_MAIN_TAGS[WEBSITES.mangakakalot].mainContainerInfo
+    } > .manga-info-text`,
     // used by appending this tag to infoBlockTag
     artistTag:
-      ".variations-tableInfo > tbody > tr:nth-child(2) > .table-value > a",
+      ".manga-info-text > li:nth-child(2) > a",
     // used by appending this tag to infoBlockTag
-    titleTag: "h1",
+    titleTag: ".manga-info-text > li:first-child > h1",
     // element containing info regarding the parody, language, and translator
     // used by appending this tag to infoBlockTag
     othersTag: "",
     // individual list elements in chapterList
     chapterRowTag: `${
-      WEBSITE_MAIN_TAGS[WEBSITES.readmanganato].mainContainer
-    } > .panel-story-chapter-list > .row-content-chapter > li`,
+      WEBSITE_MAIN_TAGS[WEBSITES.mangakakalot].mainContainer
+    } > .chapter > .manga-info-chapter > .chapter-list > .row`,
     // the actual chapter number value from chapterRow
     // used by appending this tag to chapterRow
-    chapterNumTag: "a",
+    chapterNumTag: "span:first-child > a",
     // element container for the page images
     pageTag: "",
     // thumbnail image src values
