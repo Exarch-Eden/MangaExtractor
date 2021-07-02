@@ -13,11 +13,16 @@ const maxPageValueRegex = /[0-9]+/g;
 // ([a-z]+\d+)$
 
 // for extracting the manga id
-const mangaIdRegex = /([a-z]+\d+)$/;
+const mangaIdRegex = /((?<=-|\/)\w+)$/;
+// old regex
+// const mangaIdRegex = /([a-z]+\d+)$/;
 // for removal of https:// and .com/ from the manga overview page link
 const mangaPageLinkSeparatorRegex = /(?<=https:\/\/)(.*)(?=\.com\/)/g;
 // const mangaPageLinkSeparatorRegex = /((\.com\/([a-z-]+\d+))|(https:\/\/))/g;
 // const mangaPageLinkSeparatorRegex = /((\.com\/)|(https:\/\/))/g;
+
+// for specific link formats from mangakakalot website
+const linkFormatRegex = /(?<=mangakakalot\.com\/)(\w+)(?=-|\/)/;
 
 // anchor container for the title, id, and cover
 const mangaDivTag = `.container > .main-wrapper > .listCol > .truyen-list > .list-truyen-item-wrap`;
@@ -64,17 +69,32 @@ exports.getLatest = async (res, targetUrl) => {
     const $ = cheerio.load(html);
 
     $(mangaDivTag).each((index, element) => {
+      // holds all relevant data extracted from the website
+      // and is to be pushed to the bookTitles array
+      let curBook = {};
+
       const title = $(element).find(captionTag).text();
       const coverUrl = $(element).find(imgTag).attr("src");
 
       // the original manga overview page link
       const overviewPageLink = $(element).find(idTag).attr("href");
+      // for testing purposes
+      // console.log("overviewPageLink: ", overviewPageLink);
 
       // the manga overview page link without the id
       // example output: readmanganato
       const baseOverviewPageLink = overviewPageLink.match(
         mangaPageLinkSeparatorRegex
       )[0];
+
+      // overview page links for mangakakalot
+      // have two formats so it must be accounted for
+      if (baseOverviewPageLink === "mangakakalot") {
+        // extract the link format
+        // either "read-", or "manga/"
+        curBook.linkFormat = overviewPageLink.match(linkFormatRegex)[0];
+        // console.log("linkFormat: ", curBook.linkFormat);
+      }
 
       // OLD CODE
       // const baseOverviewPageLink = overviewPageLink.split(mangaIdRegex)
@@ -84,6 +104,8 @@ exports.getLatest = async (res, targetUrl) => {
       //   : undefined;
 
       const matchedId = overviewPageLink.match(mangaIdRegex);
+      // for testing purposes
+      // console.log("matchedId: ", matchedId);
       const id = matchedId ? matchedId[0] : undefined;
 
       const latestChapter = $(element).find(latestChapterTag).text();
@@ -100,13 +122,15 @@ exports.getLatest = async (res, targetUrl) => {
         throw Error("Could not grab manga ID");
       }
 
-      bookTitles.push({
+      curBook = {
+        ...curBook,
         id: id,
         title: title,
         cover: coverUrl,
         overviewPageLink: baseOverviewPageLink,
         latestChapter: latestChapter,
-      });
+      };
+      bookTitles.push(curBook);
     });
 
     // get the max page number
