@@ -7,6 +7,7 @@ const WEBSITES = require("./constants/websites").WEBSITES;
 // REST API
 const restLatest = require("./rest/latest");
 const restTitle = require("./rest/title");
+const restChapter = require("./rest/chapter");
 const restSearch = require("./rest/search");
 
 const PORT = process.env.PORT || 8000;
@@ -98,6 +99,16 @@ app.get(ENDPOINTS.title, async (req, res) => {
 
   try {
     await restTitle.getTitle(res, targetUrl);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.get(ENDPOINTS.chapter, async (req, res) => {
+  let targetUrl = ``;
+
+  try {
+    await restChapter.getChapter(res, targetUrl);
   } catch (error) {
     console.error(error);
   }
