@@ -23,8 +23,12 @@ const Routes = () => {
       <Route exact path="/search">
         <Search />
       </Route>
-      <Route exact path="/title/:website/:id">
+      <Route exact path="/title/:website/:id/:linkFormat?">
         <IndividualTitle />
+      </Route>
+      <Route exact path="/chapter/:website/:id/:linkSuffix/:linkFormat?">
+        <ImagePage />
+        {/* <IndividualTitle /> */}
       </Route>
       {/* <Route exact path="/title/:id/:page">
         <ImagePage />

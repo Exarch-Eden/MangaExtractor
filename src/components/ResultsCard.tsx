@@ -27,7 +27,13 @@ import "../styles/Universal.css";
 // interfaces
 import { Book } from "../types/manga";
 
-const ResultsCard = ({ id, title, cover, overviewPageLink }: Book): ReactElement => {
+const ResultsCard = ({
+  id,
+  title,
+  cover,
+  overviewPageLink,
+  linkFormat,
+}: Book): ReactElement => {
   // TODO: dynamically render table header with updated
   // books object
 
@@ -42,8 +48,14 @@ const ResultsCard = ({ id, title, cover, overviewPageLink }: Book): ReactElement
     setExpanded(!expanded);
   };
 
+  const linkFormatLocal =
+    overviewPageLink === "mangakakalot" && linkFormat ? `/${linkFormat}` : "";
+  const linkPath = `/title/${overviewPageLink}/${id}${linkFormatLocal}`;
+  // console.log("ResultsCard linkPath: ", linkPath);
+  
+
   return (
-    <Link to={`/title/${overviewPageLink}/${id}`}>
+    <Link to={linkPath}>
       <Card
         className={classes.root}
         // onMouseOver={handleExpandHover}
