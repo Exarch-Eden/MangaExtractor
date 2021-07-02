@@ -2,7 +2,8 @@ const cheerio = require("cheerio");
 const fetch = require("node-fetch");
 const CODES = require("../constants/statusCodes").CODES;
 const WEBSITES = require("../constants/websites").WEBSITES;
-const WEBSITE_SPECIFIC_TAGS = require("../constants/websites").WEBSITE_SPECIFIC_TAGS;
+const WEBSITE_SPECIFIC_TAGS =
+  require("../constants/websites").WEBSITE_SPECIFIC_TAGS;
 
 // removes any special characters (such as brackets or square brackets)
 const specialCharRegex = /\(|\)|\[|\]/g;
@@ -13,8 +14,10 @@ const fullSizeLastTRegex = /\/[0-9]+t/g;
 // old code
 // const fullSizeLastTRegex = /\/[0-9]t/g;
 
-// TODO: change to access the actual page url itself and extract the image from there
-// rather than using the thumbnail image
+// regex for extracting the last bit of the link used to access
+// a specific chapter
+const linkSuffixRegex = /(?<=\/)[\w\-_]+$/;
+
 const imgTag = "img";
 
 exports.getTitle = async (res, targetUrl) => {
@@ -41,7 +44,7 @@ exports.getTitle = async (res, targetUrl) => {
 
   // OLD CODE
   // WEBSITES.forEach((website) => {
-    
+
   // });
 
   // for testing purposes
@@ -78,14 +81,19 @@ exports.getTitle = async (res, targetUrl) => {
     // extract the chapters
     $(websiteTags.chapterRowTag).each((index, element) => {
       const chapterNum = $(element).find(websiteTags.chapterNumTag).text();
+      const chapterHref = $(element).find(websiteTags.chapterNumTag).attr("href");
+      const linkSuffix = chapterHref.match(linkSuffixRegex)[0];
+      console.log("linkSuffix: ", linkSuffix);
 
-      bookData.chapters.push(chapterNum);
+      bookData.chapters.push({ chapterNum, linkSuffix });
     });
 
     // reverse chapters[] in bookData so that it is numerically sorted
     // NOTE: maybe do this in client instead
 
     console.log("successfully fetched individual title data");
+    console.log("bookData:");
+    console.log(bookData);
   } catch (error) {
     console.log("---------------ERROR--------------\n");
     console.log(error);
@@ -94,6 +102,7 @@ exports.getTitle = async (res, targetUrl) => {
       .send("Error occurred while fetching individual title data")
       .status(CODES[500]);
   }
+
 
   res.send(bookData);
 };
