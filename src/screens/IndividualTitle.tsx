@@ -15,10 +15,12 @@ import { serverTitleUrl } from "../constants/serverURLS";
 
 // types
 import { Book, SessionData } from "../types/manga";
+import ChapterList from "../components/ChapterList";
 
 type IndividualTitleRouteParams = {
   website: string;
   id: string;
+  linkFormat: string;
 };
 
 const blankTitleData = {
@@ -27,13 +29,16 @@ const blankTitleData = {
 
 const IndividualTitle = () => {
   const [titleData, setTitleData] = useState<Book>(blankTitleData);
+  const [linkPath, setLinkPath] = useState("");
 
   // holds the id parameter passed through react-router
-  const { website, id }: IndividualTitleRouteParams = useParams();
+  const { website, id, linkFormat }: IndividualTitleRouteParams = useParams();
 
   // for testing purposes
   console.log("website: ", website);
   console.log("id: ", id);
+  console.log("linkFormat: ", linkFormat);
+  
 
   // extract data of id-specified doujinshi
   useEffect(() => {
@@ -61,6 +66,8 @@ const IndividualTitle = () => {
         //   pages: data.pages,
         // };
 
+        setLinkPath(`/chapter/${website}/${id}/`);
+
         // // store page urls in session storage
         // window.sessionStorage.setItem("pages", JSON.stringify(sessionData));
       } catch (error) {
@@ -83,13 +90,7 @@ const IndividualTitle = () => {
         <div className="infoContainer verticalPadding">
           <TitleInfo {...titleData} />
         </div>
-        <div className="verticalPadding">
-          <ul>
-            {titleData.chapters?.map((chapter) => (
-              <li>{chapter}</li>
-            ))}
-          </ul>
-        </div>
+        <ChapterList chapters={titleData.chapters || []} linkPath={linkPath} linkFormat={titleData.linkFormat} />
         {/* <div className="pagesContainer verticalPadding">
           <CardLayout results={titleData.thumbnails || []} id={id} />
         </div> */}

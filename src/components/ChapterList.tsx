@@ -21,9 +21,10 @@ interface ChapterListRouteParams {
 interface ChapterListProps {
   chapters: Chapters;
   linkPath: string;
+  linkFormat?: string;
 }
 
-const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath }) => {
+const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath, linkFormat }) => {
   // useEffect(() => {
   //   console.log("chapters:");
 
@@ -37,7 +38,7 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath }) => {
     <div className="verticalPadding">
       <ul>
         {chapters.map((chapter: Chapter, index: number) => {
-          const chapterLinkPath = `${linkPath}${chapter.chapterNum}`;
+          const chapterLinkPath = `${linkPath}${chapter.linkSuffix}${linkFormat ? `/${linkFormat}` : ""}`;
           console.log(chapterLinkPath);
           return (
             <li key={index} className="chapterListItem">
