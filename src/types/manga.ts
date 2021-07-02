@@ -8,12 +8,13 @@ export interface Book {
   chapters?: Chapters;
   pages?: Pages;
   thumbnails?: Pages;
+  linkFormat?: string;
 }
 
-type Chapters = Chapter[];
+export type Chapters = Chapter[];
 
-type Chapter = {
-  number: number;
+export type Chapter = {
+  chapterNum: string;
   pages?: Pages;
 }
 
