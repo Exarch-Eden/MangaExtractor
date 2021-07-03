@@ -80,20 +80,29 @@ exports.getTitle = async (res, targetUrl) => {
 
     // extract the chapters
     $(websiteTags.chapterRowTag).each((index, element) => {
+      // the chapter number e.g. Chapter 121
       const chapterNum = $(element).find(websiteTags.chapterNumTag).text();
-      const chapterHref = $(element).find(websiteTags.chapterNumTag).attr("href");
-      const linkSuffix = chapterHref.match(linkSuffixRegex)[0];
+      // the entire page link to the specified chapter
+      const chapterLink = $(element)
+        .find(websiteTags.chapterNumTag)
+        .attr("href");
+      // the last bit of the chapter page link
+      const linkSuffix = chapterLink.match(linkSuffixRegex)[0];
       console.log("linkSuffix: ", linkSuffix);
 
-      bookData.chapters.push({ chapterNum, linkSuffix });
+      bookData.chapters.push({
+        chapterNum,
+        linkSuffix,
+        chapterLink,
+      });
     });
 
     // reverse chapters[] in bookData so that it is numerically sorted
     // NOTE: maybe do this in client instead
 
     console.log("successfully fetched individual title data");
-    console.log("bookData:");
-    console.log(bookData);
+    // console.log("bookData:");
+    // console.log(bookData);
   } catch (error) {
     console.log("---------------ERROR--------------\n");
     console.log(error);
@@ -102,7 +111,6 @@ exports.getTitle = async (res, targetUrl) => {
       .send("Error occurred while fetching individual title data")
       .status(CODES[500]);
   }
-
 
   res.send(bookData);
 };
