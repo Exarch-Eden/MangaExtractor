@@ -16,6 +16,7 @@ export type Chapters = Chapter[];
 export type Chapter = {
   chapterNum: string;
   linkSuffix: string;
+  chapterLink: string;
   pages?: Pages;
 }
 
