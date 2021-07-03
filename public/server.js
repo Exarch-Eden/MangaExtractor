@@ -68,32 +68,51 @@ app.get(ENDPOINTS.title, async (req, res) => {
   // id of specific doujinshi
   const website = req.query.website;
   const id = req.query.id;
+  const linkFormat = req.query.linkFormat;
 
   // for testing purposes
   console.log("id: ", id);
   console.log("website: ", website);
+  console.log("linkFormat: ", linkFormat);
 
   if (!id) {
-    res.send(unspecifiedQueryParamLog("Id")).status(CODES[400]);
+    res.status(CODES[400]).send(unspecifiedQueryParamLog("Id"));
     return;
   }
 
   if (!website) {
-    res.send(unspecifiedQueryParamLog("Website")).status(CODES[400]);
+    res.status(CODES[400]).send(unspecifiedQueryParamLog("Website"));
+    return;
+  }
+
+  if (website === WEBSITES.mangakakalot && !linkFormat) {
+    res.status(CODES[400]).send(unspecifiedQueryParamLog("Link format"));
     return;
   }
 
   let targetUrl = `https://`;
 
+  // TODO: move second case statement values into array
   switch (website) {
     case WEBSITES.readmanganato:
       targetUrl += `${website}.com/manga-${id}`;
       break;
     case WEBSITES.mangakakalot:
-      targetUrl += `${website}.com/manga/${id}`;
+      switch (linkFormat) {
+        case "read":
+          targetUrl += `${website}.com/read-${id}`;
+          break;
+        case "manga":
+          targetUrl += `${website}.com/manga/${id}`;
+          break;
+        default:
+          res
+            .status(CODES[400])
+            .send("Link format query parameter has invalid value");
+      }
       break;
     default:
-      res.send("Website query parameter has invalid value").status(CODES[400]);
+      res.status(CODES[400]).send("Website query parameter has invalid value");
       return;
   }
 
@@ -105,7 +124,55 @@ app.get(ENDPOINTS.title, async (req, res) => {
 });
 
 app.get(ENDPOINTS.chapter, async (req, res) => {
-  let targetUrl = ``;
+  const website = req.query.website;
+  const id = req.query.id;
+  const linkSuffix = req.query.linkSuffix;
+  const encodedChapterLink = req.query.chapterLink;
+
+  // for testing purposes
+  // console.log("id: ", id);
+  // console.log("website: ", website);
+
+  if (!encodedChapterLink) {
+    res.status(CODES[400]).send(unspecifiedQueryParamLog("Chapter link"));
+    return;
+  }
+
+  const decodedChapterLink = decodeURIComponent(encodedChapterLink);
+  console.log("encodedChapterLink: ", encodedChapterLink);
+  console.log("decodedChapterLink: ", decodedChapterLink);
+
+  let targetUrl = decodedChapterLink;
+
+  // old code without chapter link query parameter
+  // if (!id) {
+  //   res.status(CODES[400]).send(unspecifiedQueryParamLog("Id"));
+  //   return;
+  // }
+
+  // if (!website) {
+  //   res.status(CODES[400]).send(unspecifiedQueryParamLog("Website"));
+  //   return;
+  // }
+
+  // if (!linkSuffix) {
+  //   res.status(CODES[400]).send(unspecifiedQueryParamLog("Link suffix"));
+  //   return;
+  // }
+
+  // let targetUrl = `https://`;
+
+  // switch (website) {
+  //   case WEBSITES.readmanganato:
+  //     targetUrl += `${website}.com/manga-${id}/${linkSuffix}`;
+  //     break;
+  //   case WEBSITES.mangakakalot:
+  //     targetUrl += `${website}.com/chapter/${id}/${linkSuffix}`;
+  //     break;
+  //   default:
+  //     res.status(CODES[400]).send("Website query parameter has invalid value");
+  //     return;
+  // }
 
   try {
     await restChapter.getChapter(res, targetUrl);
