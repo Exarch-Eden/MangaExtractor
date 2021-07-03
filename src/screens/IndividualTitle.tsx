@@ -38,12 +38,18 @@ const IndividualTitle = () => {
   console.log("website: ", website);
   console.log("id: ", id);
   console.log("linkFormat: ", linkFormat);
-  
 
   // extract data of id-specified doujinshi
   useEffect(() => {
-    // appends the id of the doujinshi to the url used to
-    const targetUrl = `${serverTitleUrl}?website=${website}&id=${id}`;
+    // target url without the link format query parameter
+    // for readmanganato sources
+    const noLinkFormat = `${serverTitleUrl}?website=${website}&id=${id}`;
+
+    // appends the necessary query parameters to the target url
+    // for mangakakalot sources
+    const targetUrl = linkFormat
+      ? `${noLinkFormat}&linkFormat=${linkFormat}`
+      : noLinkFormat;
 
     (async () => {
       try {
@@ -67,7 +73,7 @@ const IndividualTitle = () => {
         // };
 
         setLinkPath(`/chapter/${website}/${id}/`);
-
+        
         // // store page urls in session storage
         // window.sessionStorage.setItem("pages", JSON.stringify(sessionData));
       } catch (error) {
@@ -90,7 +96,11 @@ const IndividualTitle = () => {
         <div className="infoContainer verticalPadding">
           <TitleInfo {...titleData} />
         </div>
-        <ChapterList chapters={titleData.chapters || []} linkPath={linkPath} linkFormat={titleData.linkFormat} />
+        <ChapterList
+          chapters={titleData.chapters || []}
+          linkPath={linkPath}
+          linkFormat={titleData.linkFormat}
+        />
         {/* <div className="pagesContainer verticalPadding">
           <CardLayout results={titleData.thumbnails || []} id={id} />
         </div> */}

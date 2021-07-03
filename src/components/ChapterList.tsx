@@ -24,7 +24,11 @@ interface ChapterListProps {
   linkFormat?: string;
 }
 
-const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath, linkFormat }) => {
+const ChapterList: React.FC<ChapterListProps> = ({
+  chapters,
+  linkPath,
+  linkFormat,
+}) => {
   // useEffect(() => {
   //   console.log("chapters:");
 
@@ -38,10 +42,16 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath, linkForma
     <div className="verticalPadding">
       <ul>
         {chapters.map((chapter: Chapter, index: number) => {
-          const chapterLinkPath = `${linkPath}${chapter.linkSuffix}${linkFormat ? `/${linkFormat}` : ""}`;
+          const chapterLinkPath = `${linkPath}${chapter.linkSuffix}${
+            linkFormat ? `/${linkFormat}` : ""
+          }`;
           console.log(chapterLinkPath);
           return (
-            <li key={index} className="chapterListItem">
+            <li
+              key={index}
+              className="chapterListItem"
+              onClick={() => sessionStoreOnClick(chapter.chapterLink)}
+            >
               <Link to={chapterLinkPath}>{chapter.chapterNum}</Link>
             </li>
           );
@@ -49,6 +59,17 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, linkPath, linkForma
       </ul>
     </div>
   );
+};
+
+/**
+ * Store the specified chapter page link in session storage
+ * which is to be retrieved when the ImaegPage screen is rendered.
+ */
+const sessionStoreOnClick = (chapterLink: string) => {
+  console.log("storing chapterLink: ", chapterLink);
+  
+  // store chapter page link url in session storage (to be retrieved in ImagePage screen)
+  window.sessionStorage.setItem("chapterLink", chapterLink);
 };
 
 export default ChapterList;
