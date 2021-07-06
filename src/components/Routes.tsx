@@ -26,7 +26,7 @@ const Routes = () => {
       <Route exact path="/title/:website/:id/:linkFormat?">
         <IndividualTitle />
       </Route>
-      <Route exact path="/chapter/:website/:id/:linkSuffix/:linkFormat?">
+      <Route exact path="/chapter/:website/:id/:linkSuffix/:page/:linkFormat?/">
         <ImagePage />
         {/* <IndividualTitle /> */}
       </Route>

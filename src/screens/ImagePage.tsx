@@ -19,31 +19,38 @@ type ImagePageRouteParams = {
   id: string;
   linkSuffix: string;
   linkFormat?: string;
+  page: string;
 };
 
 const ImagePage = () => {
-  // // holds the src value of the current image to display
-  // const [imageSrc, setImageSrc] = useState("");
+  // holds the src value of the current image to display
+  const [imageSrc, setImageSrc] = useState("");
   // holds the src values of all the images belonging to the id-specified title
   const [imageArray, setImageArray] = useState<Pages>([]);
-  // // holds the maximum page number available for this specific title
-  // // used mainly for pagination
-  // const [maxPageNumber, setMaxPageNumber] = useState(1);
-  // // holds the current page number
-  // const [pageNumber, setPageNumber] = useState(1);
+  // holds the maximum page number available for this specific title
+  // used mainly for pagination
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+  // holds the current page number
+  const [pageNumber, setPageNumber] = useState(1);
 
   // // for testing purposes
   // console.log("ImagePage RENDER");
   // // console.log("imageSrc: ", imageSrc);
 
-  const { website, id, linkSuffix, linkFormat }: ImagePageRouteParams =
+  const { website, id, linkSuffix, page, linkFormat }: ImagePageRouteParams =
     useParams();
 
+  /**
+   * Fetches image src urls for the specified chapter and is to be stored
+   * in the image array.
+   */
   const fetchData = useCallback(async (targetUrl: string) => {
     const fetchedImages = await fetchImages(targetUrl);
     setImageArray(fetchedImages);
+    // console.table(fetchedImages);
   }, []);
 
+  // fetch image src data from local server
   useEffect(() => {
     // console.table({ website, id, linkSuffix, linkFormat });
 
@@ -72,13 +79,14 @@ const ImagePage = () => {
 
       console.error(error);
     }
-  }, [fetchData]);
+  }, [id, fetchData]);
   // old dependencies
   // }, [website, id, linkSuffix, linkFormat, fetchData]);
 
-  // useEffect(() => {
-  //   setPageNumber(parseInt(page));
-  // }, [page]);
+  // set the current page number
+  useEffect(() => {
+    setPageNumber(parseInt(page));
+  }, [page]);
 
   // useEffect(() => {
   //   console.log("added event listener");
@@ -155,56 +163,77 @@ const ImagePage = () => {
   //   } // end ifelse
   // }, [id]);
 
-  // // updates image src whenever the page number is changed
-  // useEffect(() => {
-  //   const index = pageNumber - 1;
-  //   setImageSrc(imageArray[index]);
+  // const fetchIndivImage = useCallback(async (imageUrl: string) => {
+  //   const res = await fetch(imageUrl, {
+  //     headers: {
+  //       "Referer": "https://mangakakalot.com/",
+  //       "User-Agent": "Mozilla/5.0",
+  //     },
+  //   });
+  //   const imageBlob = await res.blob();
+  //   const fetchedImage = URL.createObjectURL(imageBlob);
+  //   console.log("fetchedImage: ", fetchedImage);
+  //   return fetchedImage;
+  // }, []);
 
-  //   // addPageKeyListeners(pageNumber, maxPageNumber, setPageNumber);
+  // updates image src whenever the page number is changed
+  useEffect(() => {
+    const index = pageNumber - 1;
+    setImageSrc(imageArray[index]);
 
-  //   // old code
-  //   // // attempt to get page url from session data
-  //   // const sessionDataStringified = window.sessionStorage.getItem("pages");
+    // old code to attempt to bypass error 403
+    // const fetchAndSetImage = async () => {
+    //   const fetchedImageSrc = await fetchIndivImage(imageArray[index]);
+    //   setImageSrc(fetchedImageSrc);
+    // };
 
-  //   // if (sessionDataStringified) {
-  //   //   // session data string formatted to JSON
-  //   //   const sessionData: SessionData = JSON.parse(sessionDataStringified);
-  //   //   const index = pageNumber - 1;
-  //   //   setImageSrc(sessionData.pages[index]);
-  //   // }
-  // }, [pageNumber, imageArray]);
+    // fetchAndSetImage();
 
-  // // router path string lacking a second parameter
-  // // used for pagination (component sets the second parameter value itself)
-  // const pathNoPageNumber = `/title/${id}/`;
+    // addPageKeyListeners(pageNumber, maxPageNumber, setPageNumber);
+
+    // old code
+    // // attempt to get page url from session data
+    // const sessionDataStringified = window.sessionStorage.getItem("pages");
+
+    // if (sessionDataStringified) {
+    //   // session data string formatted to JSON
+    //   const sessionData: SessionData = JSON.parse(sessionDataStringified);
+    //   const index = pageNumber - 1;
+    //   setImageSrc(sessionData.pages[index]);
+    // }
+  }, [pageNumber, imageArray]);
+  // old dependencies
+  // }, [pageNumber, imageArray, fetchIndivImage]);
+
+  // router path string lacking a second parameter
+  // used for pagination (component sets the second parameter value itself)
+  const pathNoPageNumber = `/chapter/${website}/${id}/${linkSuffix}/`;
 
   // for testing purposes
-  return <p>{imageArray}</p>;
+  // return <p>{imageArray}</p>;
 
-  // return (
-  //   <div>
-  //     <div className="titleContainer verticalPadding">
-  //       <p>Image Page</p>
-  //     </div>
-  //     <div className="contentContainer verticalPadding">
-  //       {/* for testing purposes */}
-  //       {/* <p>id {id}</p>
-  //       <p>page number {pageNumber}</p> */}
-  //       {imageSrc !== "" ? (
-  //         <img
-  //           className="fullImage"
-  //           src={imageSrc}
-  //           alt={`image ${pageNumber} for book ${id}`}
-  //         />
-  //       ) : null}
-  //     </div>
-  //     <PageNumbers
-  //       path={pathNoPageNumber}
-  //       curPageNumber={pageNumber}
-  //       maxPageNumber={maxPageNumber}
-  //     />
-  //   </div>
-  // );
+  return (
+    <div>
+      <div className="titleContainer verticalPadding">
+        <p>Image Page</p>
+      </div>
+      <div className="contentContainer verticalPadding">
+        {imageSrc !== "" ? (
+          <img
+            className="fullImage"
+            src={imageSrc}
+            alt={`image ${pageNumber} for book ${id}`}
+            referrerPolicy="no-referrer"
+          />
+        ) : null}
+      </div>
+      <PageNumbers
+        path={pathNoPageNumber}
+        curPageNumber={pageNumber}
+        maxPageNumber={maxPageNumber}
+      />
+    </div>
+  );
 };
 
 const addPageKeyListeners = (

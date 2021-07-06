@@ -42,7 +42,7 @@ const ChapterList: React.FC<ChapterListProps> = ({
     <div className="verticalPadding">
       <ul>
         {chapters.map((chapter: Chapter, index: number) => {
-          const chapterLinkPath = `${linkPath}${chapter.linkSuffix}${
+          const chapterLinkPath = `${linkPath}${chapter.linkSuffix}/1${
             linkFormat ? `/${linkFormat}` : ""
           }`;
           console.log(chapterLinkPath);
