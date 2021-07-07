@@ -12,7 +12,7 @@ import "../styles/ImagePage.css";
 
 // types
 import { Pages, SessionData } from "../types/manga";
-import { serverChapterUrl } from "../constants/serverURLS";
+import { SERVER_CHAPTER_URL } from "../constants/serverURLS";
 
 type ImagePageRouteParams = {
   website: string;
@@ -65,7 +65,7 @@ const ImagePage = () => {
       }
 
       // using chapterLink extracted from sessionStorage encoded
-      const targetUrl = `${serverChapterUrl}?chapterLink=${encodeURIComponent(
+      const targetUrl = `${SERVER_CHAPTER_URL}?chapterLink=${encodeURIComponent(
         chapterLink
       )}`;
 

@@ -12,7 +12,7 @@ import "../styles/Home.css";
 import "../styles/Universal.css";
 
 // local constants
-import { serverSearchUrl } from "../constants/serverURLS";
+import { SERVER_SEARCH_URL } from "../constants/serverURLS";
 
 // types
 import { Book } from "../types/manga";
@@ -175,7 +175,7 @@ const fetchSearchData = async (searchInput: string, pageNumber?: number) => {
   const formattedInput = searchInput.trim().replace(searchInputRegex, "+");
 
   // url with search query parameter filled
-  let targetUrl = `${serverSearchUrl}?search=${formattedInput}`;
+  let targetUrl = `${SERVER_SEARCH_URL}?search=${formattedInput}`;
 
   // optional page number query parameter
   if (pageNumber && pageNumber > 1) {

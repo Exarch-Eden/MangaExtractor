@@ -8,7 +8,7 @@ import TextField from "@material-ui/core/TextField";
 import "../styles/SearchInput.css";
 
 // local constants
-import { serverSearchUrl } from "../constants/serverURLS";
+import { SERVER_SEARCH_URL } from "../constants/serverURLS";
 
 // types
 import { Book } from "../types/manga";

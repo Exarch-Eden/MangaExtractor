@@ -11,7 +11,7 @@ import "../styles/IndividualTitle.css";
 import "../styles/Universal.css";
 
 // local constants
-import { serverTitleUrl } from "../constants/serverURLS";
+import { SERVER_TITLE_URL } from "../constants/serverURLS";
 
 // types
 import { Book, SessionData } from "../types/manga";
@@ -43,7 +43,7 @@ const IndividualTitle = () => {
   useEffect(() => {
     // target url without the link format query parameter
     // for readmanganato sources
-    const noLinkFormat = `${serverTitleUrl}?website=${website}&id=${id}`;
+    const noLinkFormat = `${SERVER_TITLE_URL}?website=${website}&id=${id}`;
 
     // appends the necessary query parameters to the target url
     // for mangakakalot sources

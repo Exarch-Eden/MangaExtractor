@@ -1,13 +1,9 @@
 // third-party libraries
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import React, { FC, useCallback, useEffect, useState } from "react";
 
 // components
 import CardLayout from "../components/CardLayout";
-import PageNumbers from "../components/Pagination/PageNumbers";
 import PageNumbersLocal from "../components/Pagination/PageNumbersLocal";
-import ResultsCard from "../components/ResultsCard";
-import ResultsTable from "../components/ResultsTable";
 
 // css
 import "../styles/Home.css";
@@ -17,7 +13,7 @@ import "../styles/Universal.css";
 import { Book } from "../types/manga";
 
 // local constants
-import { serverLatestUrl } from "../constants/serverURLS";
+import { SERVER_LATEST_URL } from "../constants/serverURLS";
 
 // const serverLatestUrl = "http://localhost:8000/latest";
 
@@ -27,15 +23,19 @@ type HomeRouteParams = {
 
 const fetchFailedMessage = "Failed to fetch data from server :(";
 
-const paginationPath = "/";
-
 /**
  * Placeholder value for the max page number.
  * As of the 15th of June 2021, the max page number is 14274
  */
 const maxPageNumberPlaceholder = 14274;
 
-const Home = (): ReactElement => {
+/**
+ * Home screen component renders the latest updated manga titles
+ * from certain websites.
+ *
+ * @returns The home screen component.
+ */
+const Home: FC = () => {
   // holds data regarding the latest releases
   const [latestData, setLatestData] = useState<Book[]>([]);
   // holds the maximum page number available for this specific title
@@ -44,30 +44,26 @@ const Home = (): ReactElement => {
   // holds the current page number
   const [pageNumber, setPageNumber] = useState(1);
 
-  const onChange = useCallback((newPageNumber: number) => {
+  /**
+   * Handler for page number change. Is passed
+   * to PageNumbersLocal component which triggers it
+   * when the component is pressed.
+   */
+  const onPageNumChange = useCallback((newPageNumber: number) => {
     setPageNumber(newPageNumber);
   }, []);
 
-  // const { page }: HomeRouteParams = useParams();
-
-  // // change the page number if it is specified in the router params
-  // useEffect(() => {
-  //   if (page) {
-  //     setPageNumber(parseInt(page));
-  //   }
-  // }, [page]);
-
-  // initial fetch (this doesn't actually fetch only once)
-  // useEffect(() => {
-  //   console.log("initial fetch");
-  // }, [])
-
+  /**
+   * Fetches manga data from the local server and updates
+   * the latestData state as well as the extracted max page number.
+   */
   const fetchData = useCallback(async () => {
     try {
       // overwrite previous data with newly-fetched data
       // const retrievedData = await fetchLatestData();
       const retrievedData = await fetchLatestData(pageNumber);
       if (retrievedData) {
+        // for testing purposes
         console.table(retrievedData);
         setLatestData(retrievedData.bookTitles);
         // fetched max page number value may be undefined if it
@@ -107,24 +103,30 @@ const Home = (): ReactElement => {
       <PageNumbersLocal
         curPageNumber={pageNumber}
         maxPageNumber={maxPageNumber}
-        onChange={onChange}
+        onChange={onPageNumChange}
       />
-      {/* <PageNumbers
-        path={paginationPath}
-        curPageNumber={pageNumber}
-        maxPageNumber={maxPageNumber}
-      /> */}
     </div>
   );
 };
 
+/**
+ * Fetches manga data from the local server and updates
+ * the latestData state as well as the extracted max page number.
+ * 
+ * @param pageNumber The targeted page number to be parsed and extracted
+ * from in the targeted website.
+ * @returns The fetched data from the local server. Could be undefined if
+ * an error is encountered.
+ */
 const fetchLatestData = async (pageNumber: number) => {
   // local server endpoint to fetch
   // if specified page number is greater than 1, append query parameter
   // otherwise, use default endpoint url
   // const targetUrl = serverLatestUrl;
   const targetUrl =
-    pageNumber > 1 ? `${serverLatestUrl}?page=${pageNumber}` : serverLatestUrl;
+    pageNumber > 1
+      ? `${SERVER_LATEST_URL}?page=${pageNumber}`
+      : SERVER_LATEST_URL;
 
   // holds the return data object
   let returnData = undefined;
