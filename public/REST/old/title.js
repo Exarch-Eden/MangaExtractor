@@ -1,9 +1,9 @@
 const cheerio = require("cheerio");
 const fetch = require("node-fetch");
-const CODES = require("../constants/statusCodes").CODES;
-const WEBSITES = require("../constants/websites").WEBSITES;
+const CODES = require("../../constants/statusCodes").CODES;
+const WEBSITES = require("../../constants/websites").WEBSITES;
 const WEBSITE_SPECIFIC_TAGS =
-  require("../constants/websites").WEBSITE_SPECIFIC_TAGS;
+  require("../../constants/websites").WEBSITE_SPECIFIC_TAGS;
 
 // removes any special characters (such as brackets or square brackets)
 const specialCharRegex = /\(|\)|\[|\]/g;

@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const fetch = require("node-fetch");
-const CODES = require("../constants/statusCodes").CODES;
+const CODES = require("../../constants/statusCodes").CODES;
 
 // removes the backslashes and g characters from the href attribute of
 // a element
