@@ -14,6 +14,7 @@ import { Book } from "../types/manga";
 
 // local constants
 import { SERVER_LATEST_URL } from "../constants/serverURLS";
+import { DOMAINS } from "../constants/domains";
 
 // const serverLatestUrl = "http://localhost:8000/latest";
 
@@ -112,7 +113,7 @@ const Home: FC = () => {
 /**
  * Fetches manga data from the local server and updates
  * the latestData state as well as the extracted max page number.
- * 
+ *
  * @param pageNumber The targeted page number to be parsed and extracted
  * from in the targeted website.
  * @returns The fetched data from the local server. Could be undefined if
@@ -120,13 +121,13 @@ const Home: FC = () => {
  */
 const fetchLatestData = async (pageNumber: number) => {
   // local server endpoint to fetch
+  let targetUrl = `${SERVER_LATEST_URL}?domain=${DOMAINS.mangakakalot}`;
+  
   // if specified page number is greater than 1, append query parameter
   // otherwise, use default endpoint url
-  // const targetUrl = serverLatestUrl;
-  const targetUrl =
-    pageNumber > 1
-      ? `${SERVER_LATEST_URL}?page=${pageNumber}`
-      : SERVER_LATEST_URL;
+  if (pageNumber > 1) {
+    targetUrl += `&page=${pageNumber}`;
+  }
 
   // holds the return data object
   let returnData = undefined;
