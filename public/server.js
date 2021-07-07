@@ -1,14 +1,20 @@
 const express = require("express");
 const http = require("http");
+
+// miscellaneous local imports
 const CODES = require("./constants/statusCodes").CODES;
 const ENDPOINTS = require("./constants/endpoints").ENDPOINTS;
 const WEBSITES = require("./constants/websites").WEBSITES;
+const DOMAINS = require("./constants/domains").DOMAINS;
 
-// REST API
-const restLatest = require("./rest/latest");
-const restTitle = require("./rest/title");
-const restChapter = require("./rest/chapter");
-const restSearch = require("./rest/search");
+// test REST API functions
+// const restLatest = require("./rest/testing/latest");
+
+// old REST API functions
+const restLatest = require("./rest/old/latest");
+const restTitle = require("./rest/old/title");
+const restChapter = require("./rest/old/chapter");
+const restSearch = require("./rest/old/search");
 
 const PORT = process.env.PORT || 8000;
 
@@ -19,7 +25,6 @@ app.use(express.json());
 
 // base url for target website
 const BASE_URL = "https://mangakakalot.com/";
-// const BASE_URL = "https://nhentai.net/";
 //
 const INDIV_TITLE_SUFFIX = "g/";
 //
@@ -36,7 +41,9 @@ app.get(ENDPOINTS.default, (req, res) => {
  * in the home page of the target website.
  */
 app.get(ENDPOINTS.latest, async (req, res) => {
-  const latestUrl = "manga_list?type=latest&category=all&state=all";
+  // for testing purposes where the number of requests is strictly
+  // limited to 2
+
   // numRequests++;
 
   // if (numRequests > 2) {
@@ -44,14 +51,39 @@ app.get(ENDPOINTS.latest, async (req, res) => {
   // }
 
   const page = req.query.page;
+  const domain = req.query.domain;
 
   // for testing purposes
-  console.log("page number: ", page);
+  console.log("query params: ", { page, domain });
 
-  let targetUrl = BASE_URL + latestUrl;
+  if (!domain) {
+    res.status(CODES[400]).send(unspecifiedQueryParamLog("Domain"));
+    return;
+  }
 
-  // if page was specified, add it to target url
-  page ? (targetUrl += `&page=${page}`) : (targetUrl += `&page=1`);
+  // mangakakalot sources
+  // let targetUrl = BASE_URL + latestUrl;
+
+  let targetUrl = getWebsiteBaseURL(domain);
+
+  // failed to find website link of domain
+  if (!targetUrl) {
+    res.status(CODES[400]).send("Invalid domain query parameter value.");
+    return;
+  }
+
+  // append to target url for certain websites to get latest
+  switch (domain) {
+    case WEBSITES.mangakakalot:
+      targetUrl += "manga_list?type=latest&category=all&state=all";
+      // if page was specified, add it to target url
+      page ? (targetUrl += `&page=${page}`) : (targetUrl += `&page=1`);
+      break;
+    default:
+      break;
+  }
+
+  console.log("targetUrl: \n", targetUrl);
 
   try {
     await restLatest.getLatest(res, targetUrl);
@@ -59,6 +91,26 @@ app.get(ENDPOINTS.latest, async (req, res) => {
     console.error(error);
   }
 });
+
+/**
+ * Returns the full website link of the specified website domain.
+ *
+ * @param {string} domainName The website domain to match with.
+ * @returns The website domain link.
+ */
+const getWebsiteBaseURL = (domainName) => {
+  let baseUrl = "";
+
+  for (const key in DOMAINS) {
+    console.log(`key: ${key} | domainName: ${domainName}`);
+    if (key === domainName) {
+      console.log("key and domainName matched!");
+      baseUrl = DOMAINS[key];
+    }
+  }
+
+  return baseUrl;
+};
 
 // "/title"
 /**
